@@ -1,0 +1,7 @@
+.DS_Store
+.idea
+
+outputs/*
+!outputs/.gitkeep
+
+__pycache__
