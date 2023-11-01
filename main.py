@@ -14,20 +14,18 @@ class App:
     def __init__(self, args):
         self.args = args
         self.app = gr.Blocks(title="bmwhisper", theme=self.args.theme)
-
-    def is_compelete(self):
-        return self.text != ""
     
     def start_trans_file(self, fileobj):
         file_name = fileobj[0].name
         current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        console_result = subprocess.run(['bmwhisper', file_name, "--model", "small", "--output_dir", "outputs/" + current_time], capture_output=True, text=True)
+        console_result = subprocess.run(['bmwhisper', file_name, "--model", "small", "--output_dir", "outputs/" + current_time, "--bmodel_dir", "/data/whisper-TPU_py/bmodel"], capture_output=True, text=True)
+        # print(console_result)
         content = ""
         with open(glob(f"./outputs/{current_time}/*.txt")[0], 'r') as file:
             content = file.read()
         print(current_time, content)
         self.text = content
-        return content, glob(f"./outputs/{current_time}/*")
+        return content, glob(f"./outputs/{current_time}/*"), gr.update(visible=True), gr.update(visible=True)
 
     def start_trans_mic(self, fileobj):
         file_name = fileobj.name
@@ -76,7 +74,7 @@ class App:
 
     def clear(self):
         self.text = ""
-        return None, None, None, None
+        return None, None, None, None, gr.update(visible=False), gr.update(visible=False)
 
     
     def launch(self):
@@ -94,32 +92,38 @@ class App:
                         clear_run = gr.Button("清楚")
                     with gr.Row():
                         tb_indicator = gr.Textbox(label="转录文本", scale=8)
-                        summary_run = gr.Button("摘要文本", visible=self.is_compelete())
+                    with gr.Row():
+                        summary_run = gr.Button("摘要文本", visible=False)
+                    with gr.Row():
+                        summary_indicator = gr.Textbox(label="文本摘要", scale=8, visible=False)
                     with gr.Row():
                         download = gr.Files(label="已转录文档")
-                    with gr.Row():
-                        summary_indicator = gr.Textbox(label="文本摘要", scale=8, visible=self.is_compelete())
+                    
 
 
-                btn_run.click(fn=self.start_trans_file, inputs=[input_file], outputs=[tb_indicator, download])
-                clear_run.click(fn=self.clear, outputs=[tb_indicator, summary_indicator, input_file, download])
+                btn_run.click(fn=self.start_trans_file, inputs=[input_file], outputs=[tb_indicator, download, summary_run, summary_indicator])
+                clear_run.click(fn=self.clear, outputs=[tb_indicator, summary_indicator, input_file, download, summary_run, summary_indicator])
                 summary_run.click(fn=self.summary, outputs=[summary_indicator])
 
 
-                with gr.TabItem("Mic"):
-                    with gr.Row():
-                        mic_input = gr.Microphone(label="Record with Mic", type="filepath", interactive=True)
+                # with gr.TabItem("Mic"):
+                #     with gr.Row():
+                #         mic_input = gr.Microphone(label="Record with Mic", type="filepath", interactive=True)
                                         
-                    with gr.Row():
-                        btn_run = gr.Button("开始转录", variant="primary")
-                        clear_run = gr.Button("清楚")
-                    with gr.Row():
-                        tb_indicator = gr.Textbox(label="Output", scale=8)
-                    with gr.Row():
-                        download = gr.Files(label="已转录文档")
+                #     with gr.Row():
+                #         btn_run = gr.Button("开始转录", variant="primary")
+                #     with gr.Row():
+                #         clear_run = gr.Button("清楚")
+                #     with gr.Row():
+                #         tb_indicator = gr.Textbox(label="转录文本", scale=8)
+                #     with gr.Row():
+                #         summary_run = gr.Button("摘要文本", visible=True)
+                #     with gr.Row():
+                #         download = gr.Files(label="已转录文档")
                 
-                # btn_run.click(fn=self.start_trans_mic, inputs=[mic_input], outputs=[tb_indicator, download])
-                # clear_run.click(fn=self.clear, outputs=[tb_indicator, input_file, download])
+                # btn_run.click(fn=self.start_trans_mic, inputs=[mic_input], outputs=[tb_indicator, download, summary_run, summary_indicator])
+                # clear_run.click(fn=self.clear, outputs=[tb_indicator, summary_indicator, input_file, download, summary_run, summary_indicator])
+                # clear_run.click(fn=self.clear, outputs=[tb_indicator, input_file, download, summary_run, summary_indicator])
 
 
         # Launch the app with optional gradio settings
