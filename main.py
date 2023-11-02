@@ -18,25 +18,27 @@ class App:
     def start_trans_file(self, fileobj):
         file_name = fileobj[0].name
         current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        console_result = subprocess.run(['bmwhisper', file_name, "--model", "small", "--output_dir", "outputs/" + current_time, "--bmodel_dir", "/data/whisper-TPU_py/bmodel", "--chip_mode", "soc"], capture_output=True, text=True)
+        console_result = subprocess.run(['bmwhisper', file_name, "--model", "small", "--output_dir", "outputs/" + current_time, "--bmodel_dir", "/data/whisper-TPU_py/bmodel", "--chip_mode", "soc", "--verbose", "False"], capture_output=True, text=True)
         # print(console_result)
         content = ""
         with open(glob(f"./outputs/{current_time}/*.txt")[0], 'r') as file:
             content = file.read()
-        print(current_time, content)
+        print("time:", current_time)
+        print("content:", content)
         self.text = content
         return content, glob(f"./outputs/{current_time}/*"), gr.update(visible=True), gr.update(visible=True)
 
-    def start_trans_mic(self, fileobj):
-        file_name = fileobj.name
-        current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        console_result = subprocess.run(['bmwhisper', file_name, "--model", "base", "--inference", "--output_dir", "outputs/" + current_time], capture_output=True, text=True)
-        content = ""
-        with open(glob(f"./outputs/{current_time}/*.txt")[0], 'r') as file:
-            content = file.read()
-        print(current_time, content)
-        self.text = content
-        return content, glob(f"./outputs/{current_time}/*")
+    # def start_trans_mic(self, fileobj):
+    #     file_name = fileobj.name
+    #     current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    #     console_result = subprocess.run(['bmwhisper', file_name, "--model", "base", "--inference", "--output_dir", "outputs/" + current_time], capture_output=True, text=True)
+    #     content = ""
+    #     with open(glob(f"./outputs/{current_time}/*.txt")[0], 'r') as file:
+    #         content = file.read()
+    #     print("time: ", current_time)
+    #     print("content: ", content)
+    #     self.text = content
+    #     return content, glob(f"./outputs/{current_time}/*")
     
     def summary(self):
         if self.llm == None:
