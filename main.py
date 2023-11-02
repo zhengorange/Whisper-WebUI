@@ -18,7 +18,7 @@ class App:
     def start_trans_file(self, fileobj):
         file_name = fileobj[0].name
         current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        console_result = subprocess.run(['bmwhisper', file_name, "--model", "small", "--output_dir", "outputs/" + current_time, "--bmodel_dir", "/data/whisper-TPU_py/bmodel"], capture_output=True, text=True)
+        console_result = subprocess.run(['bmwhisper', file_name, "--model", "small", "--output_dir", "outputs/" + current_time, "--bmodel_dir", "/data/whisper-TPU_py/bmodel", "--chip_mode", "soc"], capture_output=True, text=True)
         # print(console_result)
         content = ""
         with open(glob(f"./outputs/{current_time}/*.txt")[0], 'r') as file:
