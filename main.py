@@ -51,7 +51,7 @@ class App:
         else:
             segments = []
             current_segment = ''
-            all_segments = [x for x in re.split(r'[。]', self.text) if x != ""]
+            all_segments = [x for x in re.split(r'[。.]', self.text) if x != ""]
 
             for sentence in all_segments:
                 if len(current_segment) + len(sentence) <= 800:
@@ -89,7 +89,7 @@ class App:
                         input_file = gr.Files(type="file", label="Upload File here", file_types=["audio"])                
                     with gr.Row():
                         btn_run = gr.Button("开始转录", variant="primary")
-                        clear_run = gr.Button("清楚")
+                        clear_run = gr.Button("清除")
                     with gr.Row():
                         tb_indicator = gr.Textbox(label="转录文本", scale=8)
                     with gr.Row():
